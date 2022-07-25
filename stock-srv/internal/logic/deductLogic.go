@@ -35,11 +35,13 @@ func (l *DeductLogic) Deduct(in *pb.DecuctReq) (*pb.DeductResp, error) {
 
 	fmt.Printf("扣库存start....")
 
-	stock, err := l.svcCtx.StockModel.FindOneByGoodsId(in.GoodsId)
+	stock, err := l.svcCtx.StockModel.FindOneByGoodsId(in.GoodsId) //查询目前的商品库存
+
 	if err != nil && err != model.ErrNotFound {
 		//!!!一般数据库不会错误不需要dtm回滚，就让他一直重试，这时候就不要返回codes.Aborted, dtmcli.ResultFailure 就可以了，具体自己把控!!!
 		return nil, status.Error(codes.Internal, err.Error())
 	}
+	// 库存是否为空 或者下单库存已经超过多余的库存
 	if stock == nil || stock.Num < in.Num {
 		//【回滚】库存不足确定需要dtm直接回滚，直接返回 codes.Aborted, dtmcli.ResultFailure 才可以回滚
 		return nil, status.Error(codes.Aborted, dtmcli.ResultFailure)

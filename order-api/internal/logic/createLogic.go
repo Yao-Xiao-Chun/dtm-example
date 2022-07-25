@@ -55,7 +55,7 @@ func (l *CreateLogic) Create(req types.QuickCreateReq, r *http.Request) (*types.
 
 	//这里只举了saga例子，tcc等其他例子基本没啥区别具体可以看dtm官网
 
-	gid := dtmgrpc.MustGenGid(dtmServer)
+	gid := dtmgrpc.MustGenGid(dtmServer) //生成 全局事务id
 
 	//开启分布式事务
 	saga := dtmgrpc.NewSagaGrpc(dtmServer, gid).
